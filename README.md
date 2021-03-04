@@ -1,62 +1,30 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Filas e Processamento Assíncrono com Laravel
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+- Algumas vezes nossas aplicações recebem uma demanda muito grande de solicitações e muitas vezes essas solicitações são pesadas, ou seja, tem um tempo de processamento demorado e o tempo de resposta também é demorado, como o envio de um e-mail. Se a aplicação precisa processar algo pesado com um tempo de resposta grande o ideal é liberar o usuário, evitando o travamento da aplicação e executando essa tarefa enquanto o servidor estiver ocioso. Além de melhorar a usabilidade isso ajuda a trabalhar de forma mais inteligente, sem sobrecarregar com múltiplos processos simultâneos. Mas como podemos fazer tudo isso? Este projeto te mostrará como através do uso de filas.
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Passo 1: Criando e configurando o projeto
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- O primeiro passo é criarmos um projeto Laravel, podemos fazer isso com o seguinte comando:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```
+composer create-project laravel/laravel --prefer-dist laravel-queues
+```
 
-## Learning Laravel
+- Após criado o projeto precisamos alterar o nosso arquivo ```.env```. Dentro do arquivo existe a linha ```QUEUE_CONNECTION = sync```, precisamos trocar o ```sync``` por ```database```, isso porque utilizando o sync ele fará com que os jobs sejam executados simultâneamente e não em fila. Para verificar os drivers disponíveis basta acesssar o arquivo ```config/queue.php```, nele são listadas as possíveis conexões.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Nós ainda não temos tabela para salvar os trabalhos executados pelo nosso job, então iremos rodar o seguinte comando:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```
+php artisan queue:table
+```
 
-## Laravel Sponsors
+- Este comando irá criar duas migrations: jobs e failed_jobs. Os jobs executados com sucesso serão armazenados em jobs e os que possuírem erros serão armazenados em failed_jobs. Agora basta executar estas migrations com o comando ```php artisan migrate:fresh``` que as tabelas serão criadas.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
 
-### Premium Partners
+## Passo 2: Criando e configurando o Job
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/)**
-- **[OP.GG](https://op.gg)**
+- O laravel possuí um conceito chamado Job, que é algo que será executado quando for solicitado, e é ele que utilizaremos para processar e executar nossa fila.
 
-## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
