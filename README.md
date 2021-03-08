@@ -19,7 +19,7 @@ php artisan make:controller EmailController
 - Agora no arquivo ```routes/web.php``` adicione a seguinte linha:
 
 ```
-Route::get('email', 'EmailController@sendEmail');
+Route::get('email', [EmailController::class, 'sendEmail']);
 ```
 
 - Precisamos também criar uma classe mailable. Cada tipo de e-mail enviado pelo Laravel é representado como uma classe "mailable". Para criar basta executar este comando no seu terminal:
