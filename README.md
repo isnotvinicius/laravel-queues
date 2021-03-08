@@ -63,7 +63,7 @@ php artisan queue:table
 php artisan migrate
 ```
 
-- Isto irá criar no seu banco de dados duas tabelas: ```jobs``` e ```failed_jobs```.
+- Isto irá criar no seu banco de dados duas tabelas: ```jobs``` e ```failed_jobs```. A tabela jobs armazena os jobs executados com sucesso, e a failed_jobs os jobs que possuem algum erro.
 
 
 ## Passo 4: Criando um job
